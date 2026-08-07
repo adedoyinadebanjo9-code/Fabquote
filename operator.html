@@ -53,11 +53,13 @@ table{width:100%;border-collapse:collapse}td,th{padding:8px;border-bottom:1px so
 </div>
 </section>
 </main>
-
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-const URL="https://kefjbkzihmziovvhhueu.supabase.co";
-const KEY="sb_publishable_3khyOwuggvMfSiMnuHIXsg_GYR5UGfs";
-const db=supabase.createClient(URL,KEY);
+const SUPABASE_URL = "https://kefjbkzihmziovvhhueu.supabase.co";
+const SUPABASE_KEY = "sb_publishable_3khyOwuggvMfSiMnuHIXsg_GYR5UGFs";
+
+const db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+</script>
 
 const pricingKeys=[
  ['laser_materials','Laser materials JSON'],
