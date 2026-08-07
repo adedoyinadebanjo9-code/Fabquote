@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>FabQuote Operator</title>
+<style>
+body{font-family:system-ui,sans-serif;background:#f5f5f5;margin:0;color:#111}
+main{max-width:1000px;margin:32px auto;padding:20px}
+.card{background:white;border-radius:14px;padding:20px;margin:14px 0;box-shadow:0 2px 12px #0001}
+input,textarea,button{font:inherit;padding:10px;border:1px solid #ccc;border-radius:8px}
+input,textarea{width:100%;box-sizing:border-box;margin:6px 0 12px}
+button{cursor:pointer;background:#111;color:white}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.hidden{display:none}
+.small{font-size:13px;color:#666}
+table{width:100%;border-collapse:collapse}td,th{padding:8px;border-bottom:1px solid #eee;text-align:left}
+@media(max-width:700px){.grid{grid-template-columns:1fr}}
+</style>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+<main>
+<h1>FabQuote Operator</h1>
+<p class="small">Private pricing and lead-management console. Access requires a Supabase Auth account.</p>
+
+<section id="login" class="card">
+<h2>Sign in</h2>
+<input id="email" type="email" placeholder="Admin email">
+<input id="password" type="password" placeholder="Password">
+<button id="loginBtn">Sign in</button>
+<p id="loginMsg" class="small"></p>
+</section>
+
+<section id="app" class="hidden">
+<div class="card">
+<button id="logoutBtn">Sign out</button>
+<span id="userLabel" class="small"></span>
+</div>
+
+<div class="card">
+<h2>Pricing configuration</h2>
+<p class="small">Only the values stored in Supabase are edited here. The public calculator reads active values from the database.</p>
+<div id="pricingForm"></div>
+<button id="savePricing">Save pricing</button>
+<p id="pricingMsg" class="small"></p>
+</div>
+
+<div class="card">
+<h2>Recent quote leads</h2>
+<button id="refreshLeads">Refresh</button>
+<div id="leads"></div>
+</div>
+</section>
+</main>
+
+<script>
+const URL="https://kefjbkzihmziovvhhueu.supabase.co";
+const KEY="sb_publishable_3khyOwuggvMfSiMnuHIXsg_GYR5UGfs";
+const db=supabase.createClient(URL,KEY);
+
+const pricingKeys=[
+ ['laser_materials','Laser materials JSON'],
+ ['fdm_materials','FDM materials JSON'],
+ ['resin_materials','Resin materials JSON'],
+ ['laser_machineRate','Laser machine rate'],
+ ['laser_setup','Laser setup'],
+ ['laser_minOrder','Laser minimum order'],
+ ['laser_margin','Laser margin'],
+ ['laser_waste','Laser waste %'],
+ ['laser_discountCap','Laser discount cap'],
+ ['fdm_machineRate','FDM machine rate'],
+ ['fdm_setup','FDM setup'],
+ ['fdm_minOrder','FDM minimum order'],
+ ['fdm_margin','FDM margin'],
+ ['fdm_waste','FDM waste %'],
+ ['fdm_discountCap','FDM discount cap'],
+ ['resin_machineRate','Resin machine rate'],
+ ['resin_setup','Resin setup'],
+ ['resin_minOrder','Resin minimum order'],
+ ['resin_margin','Resin margin'],
+ ['resin_waste','Resin waste %'],
+ ['resin_discountCap','Resin discount cap']
+];
+
+async function init(){
+ const {data:{session}}=await db.auth.getSession();
+ show(session);
+ db.auth.onAuthStateChange((_e,s)=>show(s));
+}
+function show(session){
+ document.getElementById('login').classList.toggle('hidden',!!session);
+ document.getElementById('app').classList.toggle('hidden',!session);
+ if(session){
+   document.getElementById('userLabel').textContent=session.user.email||'';
+   loadPricing(); loadLeads();
+ }
+}
+loginBtn.onclick=async()=>{
+ loginMsg.textContent='Signing in…';
+ const {error}=await db.auth.signInWithPassword({email:email.value,password:password.value});
+ loginMsg.textContent=error?error.message:'';
+};
+logoutBtn.onclick=()=>db.auth.signOut();
+
+async function loadPricing(){
+ const {data,error}=await db.from('fabquote_pricing').select('*').order('key');
+ if(error){pricingMsg.textContent=error.message;return}
+ const map=Object.fromEntries((data||[]).map(x=>[x.key,x]));
+ pricingForm.innerHTML=pricingKeys.map(([key,label])=>{
+   const row=map[key]; const val=row?.value ?? '';
+   const text=typeof val==='object'?JSON.stringify(val,null,2):String(val);
+   return `<label><b>${label}</b><textarea data-key="${key}" rows="${key.endsWith('_materials')?7:2}">${text.replace(/</g,'&lt;')}</textarea></label>`;
+ }).join('');
+}
+savePricing.onclick=async()=>{
+ pricingMsg.textContent='Saving…';
+ const areas=[...document.querySelectorAll('[data-key]')];
+ for(const a of areas){
+   let value=a.value;
+   if(a.dataset.key.endsWith('_materials')){try{value=JSON.parse(value)}catch(e){pricingMsg.textContent='Invalid JSON in '+a.dataset.key;return}}
+   else value=Number(value);
+   const {error}=await db.from('fabquote_pricing').upsert({key:a.dataset.key,value,active:true,updated_at:new Date().toISOString()},{onConflict:'key'});
+   if(error){pricingMsg.textContent=error.message;return}
+ }
+ pricingMsg.textContent='Saved.';
+};
+refreshLeads.onclick=loadLeads;
+async function loadLeads(){
+ const {data,error}=await db.from('fabquote_leads').select('*').order('created_at',{ascending:false}).limit(50);
+ if(error){leads.innerHTML='<p>'+error.message+'</p>';return}
+ leads.innerHTML='<table><thead><tr><th>Date</th><th>Customer</th><th>Service</th><th>Qty</th><th>Estimate</th><th>Status</th></tr></thead><tbody>'+
+ (data||[]).map(x=>`<tr><td>${new Date(x.created_at).toLocaleString()}</td><td>${escapeHtml(x.customer_name||'')}<br>${escapeHtml(x.phone||x.email||'')}</td><td>${escapeHtml(x.service||'')}</td><td>${x.quantity??''}</td><td>${x.estimated_total??''}</td><td>${escapeHtml(x.status||'new')}</td></tr>`).join('')+
+ '</tbody></table>';
+}
+function escapeHtml(s){return String(s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
+init();
+</script>
+</body>
+</html>
