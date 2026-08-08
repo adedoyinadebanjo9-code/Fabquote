@@ -248,6 +248,15 @@ footer{margin-top:45px;padding-top:20px;border-top:1px solid var(--border);displ
 <div class="field"><label>Deadline (optional)</label><input id="deadline" type="date"></div>
 <div class="field full"><label>Notes / finishing / delivery requirements (optional)</label><textarea id="notes" rows="2" placeholder="e.g. polished edges, urgent delivery, colour requirement…"></textarea></div>
 </div>
+<div id="quoteSummaryBox" class="hidden" style="border:1px solid var(--border);border-radius:6px;padding:14px 16px;margin:4px 0 14px;background:#ffffff05">
+<div style="font-size:11px;color:var(--dim);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px">Quote summary — review before requesting</div>
+<div style="font:11.5px JetBrains Mono;color:var(--faint);margin-bottom:8px">Ref: <span id="qs_ref" style="color:var(--cyan)">—</span></div>
+<div class="line"><span class="lbl">Service</span><span class="val" id="qs_service">—</span></div>
+<div class="line"><span class="lbl">Material / detail</span><span class="val" id="qs_material">—</span></div>
+<div class="line"><span class="lbl">Quantity</span><span class="val" id="qs_qty">—</span></div>
+<div class="line"><span class="lbl">Estimated turnaround</span><span class="val" id="qs_turn">—</span></div>
+<div class="line" style="border-bottom:0;padding-top:12px;font-size:14px"><span class="lbl" style="color:var(--text);font-weight:700">Total</span><span class="val" id="qs_total" style="color:var(--yellow);font-weight:700;font-size:16px">—</span></div>
+</div>
 <div class="note" style="margin:4px 0 12px"><b>Engineer's pre-flight checklist</b> — confirm before requesting a formal quote. This doesn't change the price shown, but flags input-quality issues before they cause delays or a revised price at file review:
 <div style="margin-top:8px;display:flex;flex-direction:column;gap:6px;font-size:11.5px">
 <label style="display:flex;gap:8px;align-items:flex-start;cursor:pointer"><input type="checkbox" id="pf_manifold" style="margin-top:2px"> Geometry is manifold / watertight (3D) or paths are properly closed (2D) — no gaps or self-intersections</label>
@@ -417,6 +426,10 @@ let service='laser', lastQuote=null;
 // numbers a proprietary/failed format couldn't read automatically. Both reset on tab switch.
 let fileEngaged = false;
 let designConfirmed = false;
+// Generated once a real quote exists, shown in the summary card, and reused as the actual
+// quote_ref at submission — so the reference the customer reviews is the same one that
+// ends up in Supabase/email/WhatsApp, not a different number generated after the fact.
+let pendingQuoteRef = null;
 function confirmDesign(){ designConfirmed = true; }
 // LOCKED SHOP RATES — calibrated as conservative Lagos 2026 operating assumptions.
 // Customer-facing inputs are intentionally not allowed to change these rates.
@@ -606,7 +619,7 @@ function turnaround(hours){
 
 document.querySelectorAll('.tab').forEach(btn=>btn.addEventListener('click',()=>{
  document.querySelectorAll('.tab').forEach(b=>b.classList.remove('active'));btn.classList.add('active');
- service=btn.dataset.service; lastQuote=null; designConfirmed=false; fileEngaged=false;
+ service=btn.dataset.service; lastQuote=null; designConfirmed=false; fileEngaged=false; pendingQuoteRef=null;
  ['pf_manifold','pf_units','pf_vectors'].forEach(id=>{if($(id))$(id).checked=false});
  $('laserFields').classList.toggle('hidden',service!=='laser');$('printFields').classList.toggle('hidden',service==='laser');
  $('fdmControls').classList.toggle('hidden',service!=='fdm');$('resinControls').classList.toggle('hidden',service!=='resin');
@@ -1361,7 +1374,11 @@ function leadPayload(){
  const customer=$('customer').value.trim(), contact=$('contact').value.trim();
  if(!customer || !contact){ setDisplay('leadStatus','Please enter your name/company and WhatsApp/phone first.'); $('leadStatus').className='status warning'; return null; }
  if(!preflightComplete()){ setDisplay('leadStatus','Please confirm all three items in the pre-flight checklist above first.'); $('leadStatus').className='status warning'; return null; }
- return {id:'FQ-'+Date.now().toString(36).toUpperCase(),date:new Date().toISOString(),customer,contact,email:$('email').value.trim(),deadline:$('deadline').value,notes:$('notes').value.trim(),service,quote:lastQuote,file:$('dzFile').textContent.trim(),summary:service==='laser'?'CO₂ Laser Cutting':service==='fdm'?'FDM 3D Printing':'MSLA Resin Printing',preflightConfirmed:true};
+ // Reuse the ref already shown in the on-screen quote summary rather than minting a new one
+ // here, so the number the customer reviewed is the exact number that ends up in Supabase/
+ // email/WhatsApp — falls back to generating one only if the summary was somehow never shown.
+ const ref=pendingQuoteRef||'FQ-'+Date.now().toString(36).toUpperCase();
+ return {id:ref,date:new Date().toISOString(),customer,contact,email:$('email').value.trim(),deadline:$('deadline').value,notes:$('notes').value.trim(),service,quote:lastQuote,file:$('dzFile').textContent.trim(),summary:service==='laser'?'CO₂ Laser Cutting':service==='fdm'?'FDM 3D Printing':'MSLA Resin Printing',preflightConfirmed:true};
 }
 function buildQuoteText(lead){
  const qty=service==='laser'?Math.max(1,Math.floor(num('l_qty',1))):Math.max(1,Math.floor(num('p_qty',1)));
@@ -1442,10 +1459,25 @@ function syncPreflightGate(){
  const btn=$('requestBtn'); if(!btn)return;
  if(lastQuote && preflightComplete()) btn.removeAttribute('disabled'); else btn.setAttribute('disabled','disabled');
 }
+function updateQuoteSummary(){
+ const box=$('quoteSummaryBox'); if(!box)return;
+ const ready=!!(designConfirmed&&lastQuote);
+ box.classList.toggle('hidden',!ready);
+ if(!ready){ pendingQuoteRef=null; return; }
+ if(!pendingQuoteRef) pendingQuoteRef='FQ-'+Date.now().toString(36).toUpperCase();
+ const qty=service==='laser'?Math.max(1,Math.floor(num('l_qty',1))):Math.max(1,Math.floor(num('p_qty',1)));
+ setDisplay('qs_ref',pendingQuoteRef);
+ setDisplay('qs_service',service==='laser'?'CO₂ Laser Cutting':service==='fdm'?'FDM 3D Printing':'MSLA Resin Printing');
+ setDisplay('qs_material',lastQuote.detail||'—');
+ setDisplay('qs_qty',qty+' unit'+(qty===1?'':'s'));
+ setDisplay('qs_turn',lastQuote.turn||'—');
+ setDisplay('qs_total',NGN(lastQuote.total));
+}
 function updateCTA(){
  $('requestBtn').onclick=submitFormalQuote;$('whatsappDirectBtn').onclick=sendEstimate;$('printBtn').onclick=printQuote;
  const ready=!!(designConfirmed&&lastQuote);
  [$('whatsappDirectBtn'),$('printBtn')].forEach(b=>{ if(!b)return; b.classList.toggle('disabled',!ready); b.toggleAttribute('disabled',!ready); });
+ updateQuoteSummary();
  syncPreflightGate();
 }
 ['pf_manifold','pf_units','pf_vectors'].forEach(id=>{const el=$(id); if(el)el.addEventListener('change',syncPreflightGate)});

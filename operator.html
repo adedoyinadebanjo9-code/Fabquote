@@ -33,7 +33,7 @@ table{width:100%;border-collapse:collapse;font-size:12px}th{text-align:left;colo
 td{padding:9px 8px;border-bottom:1px solid #ffffff08;vertical-align:top}
 tr:hover td{background:#ffffff05}
 .pill{display:inline-block;padding:3px 8px;border-radius:20px;font:10px JetBrains Mono;border:1px solid var(--border);color:var(--dim)}
-.pill.new{color:var(--yellow);border-color:#f4c21a55}.pill.quoted{color:var(--cyan);border-color:#35e0c455}.pill.done{color:var(--good);border-color:#35e0c455}.pill.lost{color:var(--warn);border-color:#ff6b4a55}
+.pill.new{color:var(--yellow);border-color:#f4c21a55}.pill.quoted,.pill.reviewing{color:var(--cyan);border-color:#35e0c455}.pill.approved{color:#7dd3fc;border-color:#7dd3fc55}.pill.in_production{color:#c78e00;border-color:#c78e0055}.pill.done,.pill.completed{color:var(--good);border-color:#35e0c455}.pill.lost{color:var(--warn);border-color:#ff6b4a55}
 .pill.high{color:var(--cyan);border-color:#35e0c455}.pill.medium{color:var(--yellow);border-color:#f4c21a55}.pill.low{color:var(--warn);border-color:#ff6b4a55}
 .grid2{display:grid;grid-template-columns:1fr 1fr;gap:20px}
 .grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
@@ -209,6 +209,13 @@ function renderStock(){
 function round1(n){return Math.round(n*100)/100}
 
 /* ---------------- Leads inbox ---------------- */
+// Maps both the new pipeline (new/reviewing/approved/in_production/completed/lost)
+// and old values already sitting in the DB from before this change (quoted/done)
+// to a readable label, so nothing breaks for rows saved under the old scheme.
+function statusLabel(status){
+ const map={new:'New',reviewing:'Reviewing',quoted:'Reviewing',approved:'Approved',in_production:'In Production',completed:'Completed',done:'Completed',lost:'Lost'};
+ return map[status]||status;
+}
 async function loadLeads(){
  const tbody=$('leadsTable').querySelector('tbody'); tbody.innerHTML='';
  try{
@@ -226,11 +233,13 @@ async function loadLeads(){
    tr.innerHTML=`<td>${dt}</td><td>${escapeHtml(row.customer_name||'—')}<br><span style="color:var(--faint)">${escapeHtml(row.phone||'')}</span></td>
     <td title="${escapeHtml(notes)}">${escapeHtml(row.service||'—')}</td><td>${NGN(total)}</td>
     <td>${qty}×</td>
-    <td><span class="pill ${status}">${status}</span></td>
+    <td><span class="pill ${status}">${statusLabel(status)}</span></td>
     <td style="white-space:nowrap"><select data-lead-id="${row.id ?? ''}" style="background:var(--panel);border:1px solid var(--border);color:var(--text);padding:5px 7px;border-radius:4px;font:10.5px JetBrains Mono">
      <option value="new" ${status==='new'?'selected':''}>New</option>
-     <option value="quoted" ${status==='quoted'?'selected':''}>Quoted</option>
-     <option value="done" ${status==='done'?'selected':''}>Done</option>
+     <option value="reviewing" ${status==='reviewing'?'selected':''}>Reviewing</option>
+     <option value="approved" ${status==='approved'?'selected':''}>Approved</option>
+     <option value="in_production" ${status==='in_production'?'selected':''}>In Production</option>
+     <option value="completed" ${status==='completed'?'selected':''}>Completed</option>
      <option value="lost" ${status==='lost'?'selected':''}>Lost</option>
     </select></td>`;
    tbody.appendChild(tr);
