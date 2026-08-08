@@ -95,7 +95,17 @@ footer{margin-top:30px;padding-top:20px;border-top:1px solid var(--border);color
 </div>
 
 <div class="panel">
-<h2><span><span class="n">04</span> Live pricing</span></h2>
+<h2><span><span class="n">04</span> Printed quote verification</span><button class="btn secondary small" id="refreshPrinted">Refresh</button></h2>
+<p class="sub" style="margin:0 0 12px;font-size:11.5px">Look up a printed quote a customer brings in — check the reference and verification code on their printout against what's actually on record here before honouring the price.</p>
+<div style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap">
+<input id="printedSearch" placeholder="Search by ref (FQP-...) or code" style="flex:1;min-width:200px;background:var(--panel);border:1px solid var(--border);color:var(--text);padding:9px 11px;border-radius:4px;font:12px JetBrains Mono">
+</div>
+<div class="note" id="printedNote">Loading printed-quote log from Supabase…</div>
+<div style="overflow-x:auto"><table id="printedTable"><thead><tr><th>Date</th><th>Ref</th><th>Code</th><th>Service</th><th>Total</th><th>Qty</th></tr></thead><tbody></tbody></table></div>
+</div>
+
+<div class="panel">
+<h2><span><span class="n">05</span> Live pricing</span></h2>
 <div class="note"><b>How this works now:</b> Supabase kept failing, so pricing has two extra paths that don't depend on it. <b>1)</b> Saving a row here also writes it to this browser's storage instantly — if you open <code>index.html</code> on this same device, it's live immediately, no network needed. <b>2)</b> For customers on their own phones, click <b>Download pricing.json</b> below and upload that one file into the same folder as <code>index.html</code> on your web host — <code>index.html</code> reads it automatically, no backend, no auth, nothing to break. Supabase is still tried first as a bonus if you have it working, but nothing here depends on it anymore.</div>
 <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px">
  <button class="btn" id="downloadPricingJson">Download pricing.json</button>
@@ -259,6 +269,39 @@ async function loadLeads(){
 }
 function escapeHtml(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
 $('refreshLeads').addEventListener('click',loadLeads);
+
+/* ---------------- Printed-quote verification log ---------------- */
+let printedQuotesCache=[];
+function renderPrintedQuotes(rows){
+ const tbody=$('printedTable').querySelector('tbody'); tbody.innerHTML='';
+ if(!rows||!rows.length){ $('printedNote').classList.remove('hidden'); $('printedNote').textContent='No printed quotes on record yet — they log automatically when a customer uses Print / Save PDF on the estimate page.'; return; }
+ $('printedNote').classList.add('hidden');
+ rows.forEach(row=>{
+  const tr=document.createElement('tr');
+  const dt=row.date?new Date(row.date).toLocaleString('en-NG',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'}):'—';
+  const serviceLabel=row.service==='laser'?'CO₂ Laser':row.service==='fdm'?'FDM':row.service==='resin'?'Resin':(row.service||'—');
+  tr.innerHTML=`<td>${dt}</td><td style="font-weight:700">${escapeHtml(row.ref||'—')}</td><td>${escapeHtml(row.code||'—')}</td><td>${serviceLabel}</td><td>${NGN(row.total||0)}</td><td>${row.qty??1}×</td>`;
+  tbody.appendChild(tr);
+ });
+}
+async function loadPrintedQuotes(){
+ $('printedNote').classList.remove('hidden'); $('printedNote').textContent='Loading printed-quote log from Supabase…';
+ try{
+  const {data,error}=await sb.from('fabquote_printed_quotes').select('*').order('date',{ascending:false}).limit(100);
+  if(error) throw error;
+  printedQuotesCache=data||[];
+  renderPrintedQuotes(printedQuotesCache);
+ }catch(err){
+  $('printedNote').classList.remove('hidden');
+  $('printedNote').innerHTML=`Could not load printed-quote log from Supabase (${escapeHtml(err.message||String(err))}).`;
+ }
+}
+$('refreshPrinted').addEventListener('click',loadPrintedQuotes);
+$('printedSearch').addEventListener('input',()=>{
+ const q=$('printedSearch').value.trim().toLowerCase();
+ if(!q){ renderPrintedQuotes(printedQuotesCache); return; }
+ renderPrintedQuotes(printedQuotesCache.filter(r=>(r.ref||'').toLowerCase().includes(q)||(r.code||'').toLowerCase().includes(q)));
+});
 
 /* ---------------- Pricing editor — plain number fields, pre-filled with current defaults ---------------- */
 const DEFAULTS = {
@@ -470,7 +513,7 @@ $('importPricingFile').addEventListener('change',e=>{
 });
 
 function boot(){
- renderMachines(); renderStock(); loadLeads(); loadPricing();
+ renderMachines(); renderStock(); loadLeads(); loadPrintedQuotes(); loadPricing();
 }
 
 // Check for an existing Supabase session (e.g. returning within the same browser)
