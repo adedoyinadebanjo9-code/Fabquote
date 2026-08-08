@@ -1,0 +1,53 @@
+{
+  "laser_setup": 700,
+  "laser_machineRate": 2400,
+  "laser_materials": {
+    "mdf_3mm": {
+      "price": 25000
+    },
+    "acrylic_3mm": {
+      "price": 45000
+    },
+    "acrylic_5mm": {
+      "price": 72000
+    },
+    "plywood_3mm": {
+      "price": 8000
+    },
+    "plywood_6mm": {
+      "price": 18000
+    }
+  },
+  "fdm_materials": {
+    "ABS": {
+      "pricePerGram": 35
+    },
+    "PLA": {
+      "pricePerGram": 32
+    },
+    "PETG": {
+      "pricePerGram": 38
+    }
+  },
+  "resin_materials": {
+    "Tough": {
+      "pricePerMl": 90
+    },
+    "Standard": {
+      "pricePerMl": 75
+    },
+    "Water-washable": {
+      "pricePerMl": 82
+    }
+  },
+  "laser_minOrder": 1800,
+  "laser_margin": 0.15,
+  "fdm_machineRate": 1200,
+  "fdm_setup": 500,
+  "fdm_minOrder": 1800,
+  "fdm_margin": 0.15,
+  "resin_machineRate": 1000,
+  "resin_setup": 600,
+  "resin_minOrder": 2200,
+  "resin_margin": 0.15
+}
