@@ -1,6 +1,6 @@
 {
-  "laser_setup": 700,
-  "laser_machineRate": 2400,
+  "laser_setup": 800,
+  "laser_machineRate": 2300,
   "laser_materials": {
     "mdf_3mm": {
       "price": 25000
