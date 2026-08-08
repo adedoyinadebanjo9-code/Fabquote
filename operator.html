@@ -34,6 +34,7 @@ td{padding:9px 8px;border-bottom:1px solid #ffffff08;vertical-align:top}
 tr:hover td{background:#ffffff05}
 .pill{display:inline-block;padding:3px 8px;border-radius:20px;font:10px JetBrains Mono;border:1px solid var(--border);color:var(--dim)}
 .pill.new{color:var(--yellow);border-color:#f4c21a55}.pill.quoted{color:var(--cyan);border-color:#35e0c455}.pill.done{color:var(--good);border-color:#35e0c455}.pill.lost{color:var(--warn);border-color:#ff6b4a55}
+.pill.high{color:var(--cyan);border-color:#35e0c455}.pill.medium{color:var(--yellow);border-color:#f4c21a55}.pill.low{color:var(--warn);border-color:#ff6b4a55}
 .grid2{display:grid;grid-template-columns:1fr 1fr;gap:20px}
 .grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
 .stock-item{border:1px solid var(--border);border-radius:var(--radius);padding:12px 14px;background:var(--alt)}
@@ -90,7 +91,7 @@ footer{margin-top:30px;padding-top:20px;border-top:1px solid var(--border);color
 <div class="panel">
 <h2><span><span class="n">03</span> Leads / quote requests</span><button class="btn secondary small" id="refreshLeads">Refresh</button></h2>
 <div class="note" id="leadsNote">Loading recent leads from Supabase…</div>
-<div style="overflow-x:auto"><table id="leadsTable"><thead><tr><th>Date</th><th>Customer</th><th>Service</th><th>Total</th><th>Status</th><th></th></tr></thead><tbody></tbody></table></div>
+<div style="overflow-x:auto"><table id="leadsTable"><thead><tr><th>Date</th><th>Customer</th><th>Service</th><th>Total</th><th>Qty</th><th>Status</th><th></th></tr></thead><tbody></tbody></table></div>
 </div>
 
 <div class="panel">
@@ -211,17 +212,20 @@ function round1(n){return Math.round(n*100)/100}
 async function loadLeads(){
  const tbody=$('leadsTable').querySelector('tbody'); tbody.innerHTML='';
  try{
-  const {data,error}=await sb.from('fabquote_leads').select('*').order('date',{ascending:false}).limit(60);
+  const {data,error}=await sb.from('fabquote_leads').select('*').order('created_at',{ascending:false}).limit(60);
   if(error)throw error;
   if(!data||!data.length){ $('leadsNote').textContent='No leads in Supabase yet — they will appear here once customers submit a formal quote request.'; return; }
   $('leadsNote').classList.add('hidden');
   data.forEach(row=>{
    const tr=document.createElement('tr');
-   const total=row.quote?.total ?? row.total ?? 0;
+   const total=row.estimated_total ?? 0;
    const status=row.status||'new';
-   const dt=row.date?new Date(row.date).toLocaleDateString('en-NG',{day:'2-digit',month:'short'}):'—';
-   tr.innerHTML=`<td>${dt}</td><td>${escapeHtml(row.customer||'—')}<br><span style="color:var(--faint)">${escapeHtml(row.contact||'')}</span></td>
-    <td>${escapeHtml(row.summary||row.service||'—')}</td><td>${NGN(total)}</td>
+   const qty=row.quantity ?? 1;
+   const notes=row.notes||'';
+   const dt=row.created_at?new Date(row.created_at).toLocaleDateString('en-NG',{day:'2-digit',month:'short'}):'—';
+   tr.innerHTML=`<td>${dt}</td><td>${escapeHtml(row.customer_name||'—')}<br><span style="color:var(--faint)">${escapeHtml(row.phone||'')}</span></td>
+    <td title="${escapeHtml(notes)}">${escapeHtml(row.service||'—')}</td><td>${NGN(total)}</td>
+    <td>${qty}×</td>
     <td><span class="pill ${status}">${status}</span></td>
     <td style="white-space:nowrap"><select data-lead-id="${row.id ?? ''}" style="background:var(--panel);border:1px solid var(--border);color:var(--text);padding:5px 7px;border-radius:4px;font:10.5px JetBrains Mono">
      <option value="new" ${status==='new'?'selected':''}>New</option>

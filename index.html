@@ -21,7 +21,9 @@ button,input,select,textarea{font:inherit}::selection{background:var(--yellow);c
 details{margin-top:7px}summary{cursor:pointer;color:var(--dim);font:11px JetBrains Mono;padding:8px 0}summary:hover{color:var(--yellow)}
 .note{border-left:2px solid var(--yellow);padding:9px 11px;background:#f4c21a08;color:var(--dim);font-size:11px;line-height:1.5;margin:10px 0 14px}.note b{color:var(--text)}
 .readout{position:sticky;top:18px;overflow:hidden}.readout-head{padding:12px 18px;background:var(--raised);border-bottom:1px solid var(--border);display:flex;justify-content:space-between}.readout-head span{font:11px JetBrains Mono;text-transform:uppercase;color:var(--dim);letter-spacing:.08em}.dot{width:7px;height:7px;border-radius:50%;background:var(--cyan);box-shadow:0 0 6px var(--cyan)}
+.print-logo{display:none}
 .readout-body{padding:18px 20px 8px}.line{display:flex;justify-content:space-between;gap:15px;padding:9px 0;border-bottom:1px solid #ffffff08;font:12.5px JetBrains Mono}.line .lbl{color:var(--dim)}.line .val{color:var(--text)}.line.discount .val{color:var(--cyan)}.total-block{border-top:1px solid var(--border);margin-top:14px;padding:17px 0 5px}.tl{font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--dim)}.tv{font:700 34px JetBrains Mono;color:var(--yellow);margin-top:5px}.turnaround{font:11.5px JetBrains Mono;color:var(--dim);padding:8px 0 5px}.turnaround b{color:var(--cyan)}
+.print-verify{margin-top:10px;padding-top:10px;border-top:1px dashed var(--border);font:11px JetBrains Mono;color:var(--dim)}.print-verify b{color:var(--text)}.print-verify-note{font-size:9.5px;line-height:1.5;margin-top:6px;color:var(--faint)}
 .fab-card{display:flex;gap:12px;padding:16px 20px;border-top:1px solid var(--border);background:var(--alt)}.avatar{width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,var(--yellow),#c78e00);display:grid;place-items:center;color:#14151a;font-weight:700}.fab-info b{font-size:13px}.fab-info .role{font-size:11.5px;color:var(--dim);margin-top:3px}.fab-info .machines{font:10.5px JetBrains Mono;color:var(--cyan);margin-top:6px}
 .contact{padding:0 20px 17px}.cta-row{padding:0 20px 20px}.cta{display:block;text-align:center;background:var(--yellow);color:#14151a;font:700 14px "Space Grotesk";padding:13px;border-radius:var(--radius);text-decoration:none}.cta:hover{background:#ffd23e}.cta.disabled{opacity:.45;pointer-events:none}.cta-sub{text-align:center;color:var(--faint);font:10px JetBrains Mono;margin-top:8px}
 footer{margin-top:45px;padding-top:20px;border-top:1px solid var(--border);display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;color:var(--faint);font:10.5px JetBrains Mono}.hidden{display:none!important}.status{font-size:11px;color:var(--dim);margin:8px 0}.warning{color:var(--warn)}.success{color:var(--cyan)}
@@ -42,7 +44,12 @@ footer{margin-top:45px;padding-top:20px;border-top:1px solid var(--border);displ
 .history-item button{border:1px solid var(--border);background:transparent;color:var(--dim);padding:5px 8px;cursor:pointer}
 @media(max-width:600px){.lead-grid{grid-template-columns:1fr}.lead-grid .full{grid-column:auto}.lead-actions{display:grid}.lead-actions button,.lead-actions a{width:100%}}
 
-@media print{body{background:#fff;color:#111}.hazard,.topbar,.hero,.tabs,.panel,footer,.cta-row,.lead-actions,.lead-panel,.fab-card{display:none!important}.shell{max-width:none;padding:0}.grid{display:block}.readout{position:static;border:0;background:#fff}.readout-head{background:#eee;color:#111}.readout-body{padding:25px}.line{border-color:#ddd}.line .lbl{color:#555}.line .val{color:#111}.tv{color:#111}.turnaround b{color:#111}}
+@media print{body{background:#fff;color:#111}.hazard,.topbar,.hero,.tabs,.panel,footer,.cta-row,.lead-actions,.lead-panel,.fab-card{display:none!important}.shell{max-width:none;padding:0}.grid{display:block}.readout{position:static;border:0;background:#fff}.readout-head{background:#eee;color:#111}.readout-body{padding:25px}.line{border-color:#ddd}.line .lbl{color:#555}.line .val{color:#111}.tv{color:#111}.turnaround b{color:#111}.print-verify{border-color:#ccc}.print-verify b{color:#111}.print-verify-note{color:#555}
+.print-logo.hidden{display:block!important;text-align:center;padding:6px 0 20px;border-bottom:2px solid #111;margin-bottom:18px}
+.print-logo-mark{font:700 40px "Space Grotesk";letter-spacing:.01em;color:#111}
+.print-logo-mark span{color:#c78e00}
+.print-logo-sub{font:11px JetBrains Mono;letter-spacing:.08em;color:#555;margin-top:6px}
+}
 </style>
 </head>
 <body>
@@ -214,6 +221,7 @@ footer{margin-top:45px;padding-top:20px;border-top:1px solid var(--border);displ
 </div>
 
 <aside class="readout">
+<div class="print-logo hidden"><div class="print-logo-mark">⌁ FABQUOTE <span>LAGOS</span></div><div class="print-logo-sub">CO₂ LASER · FDM · MSLA RESIN — IKEJA, LAGOS</div></div>
 <div class="readout-head"><span>Live Quote Readout</span><div class="dot"></div></div>
 <div class="readout-body">
 <div class="line"><span class="lbl">Material / consumables</span><span class="val" id="r_material">₦0</span></div>
@@ -224,6 +232,11 @@ footer{margin-top:45px;padding-top:20px;border-top:1px solid var(--border);displ
 <div class="line"><span class="lbl">Estimated production time</span><span class="val" id="r_time">—</span></div>
 <div class="line discount"><span class="lbl">Batch discount</span><span class="val" id="r_discount">0%</span></div>
 <div class="total-block"><div class="tl">Customer total — <span id="r_qtylabel">1 unit</span></div><div class="tv" id="r_total">₦0</div><div class="turnaround">EST. TURNAROUND — <b id="r_turnaround">—</b> · ESTIMATE VALID 7 DAYS</div></div>
+<div id="printVerifyBlock" class="hidden print-verify">
+<div>Quote ref: <b id="pv_ref">—</b> &nbsp;·&nbsp; Printed: <b id="pv_date">—</b></div>
+<div>Verification code: <b id="pv_code">—</b></div>
+<div class="print-verify-note">This code is generated from the figures on this page at the moment of printing. If any number above is edited after printing, the code will no longer match FabQuote Lagos records — quote the reference above so the workshop can confirm the real figures before you pay or we produce.</div>
+</div>
 </div>
 <div class="fab-card"><div class="avatar">AD</div><div class="fab-info"><b>Adedoyin</b><div class="role">CO₂ laser · Bambu Lab A1 · Elegoo Saturn 4 · Ikeja, Lagos</div><div class="machines" id="r_machine_name">CO₂ LASER</div></div></div>
 <div class="lead-panel">
@@ -395,6 +408,16 @@ function runLaserNesting(runId){
 
 const num = (id, fallback=0) => { const v=parseFloat($(id).value); return Number.isFinite(v)?v:fallback; };
 let service='laser', lastQuote=null;
+// Price only becomes real once a file has genuinely been engaged with THIS session —
+// editing a stray dropdown or dimension field with no file present must never surface
+// a price, because the fields still hold generic, untouched placeholder defaults.
+// fileEngaged flips true the moment any file is dropped/selected (success, failure, or
+// "needs manual entry"); designConfirmed flips true only once real costing exists —
+// a successful parse, or (once a file has been engaged) the customer filling in the
+// numbers a proprietary/failed format couldn't read automatically. Both reset on tab switch.
+let fileEngaged = false;
+let designConfirmed = false;
+function confirmDesign(){ designConfirmed = true; }
 // LOCKED SHOP RATES — calibrated as conservative Lagos 2026 operating assumptions.
 // Customer-facing inputs are intentionally not allowed to change these rates.
 const SHOP = {
@@ -526,6 +549,35 @@ async function saveLeadToSupabase(payload){
     return false;
   }
 }
+// The live fabquote_leads table (already built for the operator dashboard) uses a fixed
+// schema: quote_ref, customer_name, company, phone, email, service, quantity,
+// estimated_total, notes, status. leadPayload() carries richer/nested data (deadline,
+// file description, full quote breakdown, preflight flag) that has no column of its own,
+// so it gets folded into `notes` instead of being dropped.
+function toSupabaseLeadRow(lead){
+  const qty=service==='laser'?Math.max(1,Math.floor(num('l_qty',1))):Math.max(1,Math.floor(num('p_qty',1)));
+  const q=lead.quote||{};
+  const notes=[];
+  if(lead.deadline)notes.push(`Deadline: ${lead.deadline}`);
+  if(lead.file)notes.push(`File: ${lead.file}`);
+  if(lead.summary)notes.push(`Service: ${lead.summary}`);
+  if(q.detail)notes.push(`Quote detail: ${q.detail}`);
+  if(q.turn)notes.push(`Turnaround: ${q.turn}`);
+  notes.push(`Material: ${NGN(q.material||0)} | Machine/process: ${NGN((q.machine||0)+(q.process||0))} | Setup: ${NGN(q.setup||0)}`);
+  if(q.discount)notes.push(`Batch discount: ${Math.round(q.discount*100)}%`);
+  notes.push(`Pre-flight confirmed: ${lead.preflightConfirmed?'yes':'no'}`);
+  if(lead.notes)notes.push(`Customer notes: ${lead.notes}`);
+  return{
+    quote_ref:lead.id,
+    customer_name:lead.customer,
+    phone:lead.contact,
+    email:lead.email||null,
+    service:lead.service,
+    quantity:qty,
+    estimated_total:q.total!=null?round(q.total,2):null,
+    notes:notes.join('\n')
+  };
+}
  // Optional: your own Formspree endpoint for centralized lead storage.
 const QUOTE_VALID_DAYS = 7;
 function deepMerge(base, override){
@@ -554,7 +606,7 @@ function turnaround(hours){
 
 document.querySelectorAll('.tab').forEach(btn=>btn.addEventListener('click',()=>{
  document.querySelectorAll('.tab').forEach(b=>b.classList.remove('active'));btn.classList.add('active');
- service=btn.dataset.service; lastQuote=null;
+ service=btn.dataset.service; lastQuote=null; designConfirmed=false; fileEngaged=false;
  ['pf_manifold','pf_units','pf_vectors'].forEach(id=>{if($(id))$(id).checked=false});
  $('laserFields').classList.toggle('hidden',service!=='laser');$('printFields').classList.toggle('hidden',service==='laser');
  $('fdmControls').classList.toggle('hidden',service!=='fdm');$('resinControls').classList.toggle('hidden',service!=='resin');
@@ -574,6 +626,7 @@ function fail(name,msg){$('dzFile').innerHTML=`<span class="dz-warn">${escapeHtm
 function escapeHtml(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
 
 function handleFile(file){
+ fileEngaged=true;
  ['pf_manifold','pf_units','pf_vectors'].forEach(id=>{if($(id))$(id).checked=false});
  const n=file.name.toLowerCase(), r=new FileReader();
  try{
@@ -716,6 +769,7 @@ function parseSVG(text,fname){
  if(unitsAmbiguous)warnings.push('No explicit real-world units found in this SVG (no viewBox + width/height in mm/cm/in) — dimensions were assumed at 96dpi. Double-check Width/Height below match your actual part size.');
  if(openPathCount>0)warnings.push(`${openPathCount} path${openPathCount>1?'s':''} appear open (start and end points don\u2019t meet) — verify these are intentional, not accidentally-unclosed shapes that won\u2019t cut cleanly.`);
  $('dzFile').innerHTML=escapeHtml(baseMsg)+(warnings.length?warnings.map(w=>`<br><span class="dz-warn">⚠ ${escapeHtml(w)}</span>`).join(''):'');
+ confirmDesign();
  recalc();
 }
 
@@ -803,6 +857,7 @@ function parseDXF(text,fname){
  $('dzFile').textContent=hasRedDxf
    ? `✓ ${fname} — ${round(w,1)}×${round(h,1)} mm, ${round(cut,1)} mm cut (red/CUT layer) + ${round(engrave,1)} mm engrave · DXF units converted`
    : `✓ ${fname} — ${round(w,1)}×${round(h,1)} mm, ${round(cut,1)} mm cut path · DXF units converted`;
+ confirmDesign();
  recalc();
 }
 
@@ -887,6 +942,7 @@ async function parsePDFLike(buffer,fname,isAI){
  $('dzFile').textContent=anyRed
   ? `✓ ${fname} — ${round(w,1)}×${round(h,1)} mm, ${round(cutMM,1)} mm cut (red) + ${round(engraveMM,1)} mm engrave · page 1 only`
   : `✓ ${fname} — ${round(w,1)}×${round(h,1)} mm, ${round(cutMM,1)} mm cut path · page 1 only — no red found, all vectors priced as cut`;
+ confirmDesign();
  recalc();
 }
 
@@ -922,7 +978,7 @@ function parseRaster(file,fname){
 /* ---------------- MESH PARSING ---------------- */
 function triVolume(a,b,c){return (a[0]*(b[1]*c[2]-c[1]*b[2])-a[1]*(b[0]*c[2]-c[0]*b[2])+a[2]*(b[0]*c[1]-c[0]*b[1]))/6}
 function triArea(a,b,c){const x=[b[0]-a[0],b[1]-a[1],b[2]-a[2]],y=[c[0]-a[0],c[1]-a[1],c[2]-a[2]];return .5*Math.hypot(x[1]*y[2]-x[2]*y[1],x[2]*y[0]-x[0]*y[2],x[0]*y[1]-x[1]*y[0])}
-function finishMesh(verts,tris,fname,scale=1){
+function finishMesh(verts,tris,fname,scale=1,keepSlicerMode=false){
  let vol=0,area=0,min=[Infinity,Infinity,Infinity],max=[-Infinity,-Infinity,-Infinity];
  for(const t of tris){const a=verts[t[0]],b=verts[t[1]],c=verts[t[2]];if(!a||!b||!c)continue;vol+=triVolume(a,b,c);area+=triArea(a,b,c);for(const p of [a,b,c])for(let k=0;k<3;k++){min[k]=Math.min(min[k],p[k]);max[k]=Math.max(max[k],p[k])}}
  const v=Math.abs(vol)*scale**3/1000;if(!(v>0)||!Number.isFinite(v))throw new Error('could not compute a closed mesh volume');
@@ -930,7 +986,16 @@ function finishMesh(verts,tris,fname,scale=1){
  $('p_vol').value=round(v,3);$('p_w').value=round(dims[0],2);$('p_d').value=round(dims[1],2);$('p_height').value=round(dims[2],2);
  // store geometric surface area for better shell estimation
  $('p_vol').dataset.surface=surface;
- $('dzFile').textContent=`✓ ${fname} — ${round(v,2)} cm³ · ${round(dims[0],1)}×${round(dims[1],1)}×${round(dims[2],1)} mm · mesh analyzed locally`;
+ let modeNote='';
+ if(!keepSlicerMode){
+  // Plain mesh, no slicer summary found — this is an unsliced file, so make the
+  // mode dropdown honestly say "estimate" instead of silently sitting on
+  // "Slicer-confirmed" while the weight/time fields are still zero.
+  if(service==='fdm'){$('fdm_mode').value='estimate';$('fdm_slicer_g').value=0;$('fdm_slicer_min').value=0;modeNote=' · unsliced file — using FabQuote estimate (slice in Bambu Studio/OrcaSlicer for exact pricing)';}
+  else if(service==='resin'){$('r_mode').value='estimate';$('r_slicer_ml').value=0;$('r_slicer_min').value=0;modeNote=' · unsliced file — using FabQuote estimate (slice in your resin slicer for exact pricing)';}
+ }
+ $('dzFile').textContent=`✓ ${fname} — ${round(v,2)} cm³ · ${round(dims[0],1)}×${round(dims[1],1)}×${round(dims[2],1)} mm · mesh analyzed locally${modeNote}`;
+ confirmDesign();
  recalc();
 }
 function parseSTL(buffer,fname){
@@ -998,7 +1063,7 @@ async function parse3MF(buffer,fname){
     const model=xml.documentElement,unit=(model.getAttribute('unit')||'millimeter').toLowerCase(),scale={micron:.001,millimeter:1,centimeter:10,meter:1000,inch:25.4,foot:304.8}[unit]||1;
     const verts=[...xml.getElementsByTagName('vertex')].map(v=>[+v.getAttribute('x'),+v.getAttribute('y'),+v.getAttribute('z')]);
     const tris=[...xml.getElementsByTagName('triangle')].map(t=>[+t.getAttribute('v1'),+t.getAttribute('v2'),+t.getAttribute('v3')]);
-    if(verts.length&&tris.length){finishMesh(verts,tris,fname,scale);meshApplied=true}
+    if(verts.length&&tris.length){finishMesh(verts,tris,fname,scale,statsApplied);meshApplied=true}
    }
   }
  }catch(e){ /* fine if we already have slice stats */ }
@@ -1007,6 +1072,7 @@ async function parse3MF(buffer,fname){
  let msg=meshApplied?$('dzFile').textContent:`\u2713 ${fname} \u2014 ${statsMsg}`;
  if(meshApplied&&statsApplied)msg+=` \u00b7 ${statsMsg}`;
  $('dzFile').textContent=msg;
+ confirmDesign();
  recalc();
 }
 
@@ -1070,6 +1136,10 @@ function parseGcode(text,fname){
  if(service==='fdm'&&weightG>0&&stats.timeSec>0){
   $('fdm_mode').value='slicer';$('fdm_slicer_g').value=round(weightG,2);$('fdm_slicer_min').value=Math.round(stats.timeSec/60);
   filled=true;
+ }else if(service==='fdm'){
+  // gcode found, but no reliable weight/time header — don't leave the UI claiming
+  // slicer-confirmed for numbers we couldn't actually read.
+  $('fdm_mode').value='estimate';$('fdm_slicer_g').value=0;$('fdm_slicer_min').value=0;
  }
  const h=stats.maxZ!=null?stats.maxZ:(bbox?bbox.h:null);
  if(h!=null&&h>0){$('p_height').value=round(h,2);filled=true}
@@ -1082,6 +1152,7 @@ function parseGcode(text,fname){
  msg+=' (read from gcode';
  msg+=service==='fdm'&&weightG>0&&stats.timeSec>0?' — slicer-confirmed mode enabled)':', approx. from toolpath)';
  $('dzFile').textContent=msg;
+ confirmDesign();
  recalc();
 }
 
@@ -1114,6 +1185,7 @@ async function parseSL1(buffer,fname){
  if(timeSec>0)msg+=`, ~${fmtHours(timeSec/3600)} est. print time`;
  msg+='. Resin volume isn\u2019t stored in this format — confirm ml below.';
  $('dzFile').textContent=msg;
+ confirmDesign();
  recalc();
 }
 
@@ -1255,6 +1327,20 @@ function renderBreakdownFull(q){
  el.innerHTML=lines.map(l=>`<div>${escapeHtml(l)}</div>`).join('');
 }
 function recalc(){
+ if(!designConfirmed){
+  lastQuote=null;
+  setDisplay('r_material','—');setDisplay('r_machine_cost','—');setDisplay('r_process_cost','—');
+  setDisplay('r_material_method_label','Method / detail');setDisplay('r_material_method','—');
+  setDisplay('r_process_label',service==='laser'?'Cutting':service==='fdm'?'Process':'Post-processing');
+  if($('r_engrave_line'))$('r_engrave_line').closest('.line').classList.add('hidden');
+  setDisplay('r_setup_cost','—');setDisplay('r_time','—');setDisplay('r_discount','—');
+  setDisplay('r_qtylabel','');setDisplay('r_total','—');setDisplay('r_turnaround','—');setDisplay('r_machine_name','—');
+  const badge=$('confidenceBadge'); badge.className='confidence'; badge.textContent='Upload a file to get a price';
+  $('breakdownNote').textContent='These are placeholder defaults, not a quote yet. Upload a design file above — the price is calculated from what\u2019s actually in it.';
+  $('breakdownFull').innerHTML='';
+  updateCTA();
+  return;
+ }
  try{
   const q=service==='laser'?laserQuote():service==='fdm'?fdmQuote():resinQuote();lastQuote=q;
   setDisplay('r_material',NGN(q.material));setDisplay('r_machine_cost',NGN(q.machine));setDisplay('r_process_cost',NGN(q.process||0));
@@ -1303,34 +1389,79 @@ function saveDraft(){try{localStorage.setItem('fabquote.draft',JSON.stringify({c
 function loadDraft(){try{const d=JSON.parse(localStorage.getItem('fabquote.draft')||'null');if(!d)return;$('customer').value=d.customer||'';$('contact').value=d.contact||'';$('email').value=d.email||'';$('deadline').value=d.deadline||'';$('notes').value=d.notes||''}catch(e){}}
 async function submitFormalQuote(){
  const lead=leadPayload(); if(!lead)return; saveLeadLocal(lead); saveHistory(lead); let remote=false;
- if(FORM_ENDPOINT){try{const res=await fetch(FORM_ENDPOINT,{method:'POST',headers:{'Content-Type':'application/json','Accept':'application/json'},body:JSON.stringify(lead)});remote=res.ok}catch(e){console.warn('Remote lead submission failed',e)}}
+ // Two independent remote paths — either one succeeding counts as "reached the workshop".
+ // Previously only Formspree was ever actually called; saveLeadToSupabase existed but nothing invoked it.
+ const supabaseOk=await saveLeadToSupabase(toSupabaseLeadRow(lead));
+ if(supabaseOk)remote=true;
+ if(FORM_ENDPOINT){try{const res=await fetch(FORM_ENDPOINT,{method:'POST',headers:{'Content-Type':'application/json','Accept':'application/json'},body:JSON.stringify(lead)});if(res.ok)remote=true}catch(e){console.warn('Remote lead submission failed',e)}}
  window.open(`https://wa.me/${SHOP.whatsapp}?text=${encodeURIComponent(buildQuoteText(lead))}`,'_blank','noopener');
  setDisplay('leadStatus',remote?'Request stored and WhatsApp opened for final confirmation.':'Request saved on this device and WhatsApp opened. Send the message to submit it.');
  $('leadStatus').className='status success';
 }
 function sendEstimate(){
  if(!lastQuote)return; const customer=$('customer').value.trim()||'Customer';
- const text=`FABQUOTE LAGOS — ESTIMATE\nCustomer: ${customer}\nService: ${service==='laser'?'CO₂ Laser Cutting':service==='fdm'?'FDM 3D Printing':'MSLA Resin Printing'}\nEstimated total: ${NGN(lastQuote.total)}\nProduction time: ${fmtHours(lastQuote.timeH)}\n${lastQuote.detail||''}\n\nThis is an estimate. Final price is confirmed after file and stock review.`;
+ const text=`FABQUOTE LAGOS — ESTIMATE\nCustomer: ${customer}\nService: ${service==='laser'?'CO₂ Laser Cutting':service==='fdm'?'FDM 3D Printing':'MSLA Resin Printing'}\nEstimated total: ${NGN(lastQuote.total)}\nProduction time: ${fmtHours(lastQuote.timeH)}\n${lastQuote.detail||''}\nConfidence: ${lastQuote.confidenceText||'Estimate only'}\n\nThis is an estimate. Final price is confirmed after file and stock review.`;
  window.open(`https://wa.me/${SHOP.whatsapp}?text=${encodeURIComponent(text)}`,'_blank','noopener');
 }
-function printQuote(){if(!lastQuote)return;const old=document.title;document.title=`FabQuote Lagos — ${NGN(lastQuote.total)}`;window.print();setTimeout(()=>document.title=old,500)}
+async function buildVerificationCode(ref,now){
+ const qty=service==='laser'?num('l_qty',1):num('p_qty',1);
+ // Every figure that appears on the printed page feeds the hash, so changing any of them
+ // (in Word, a PDF editor, etc.) after printing breaks the match.
+ const canonical=[ref,service,qty,round(lastQuote.total,2),round(lastQuote.material,2),round(lastQuote.machine,2),
+   round(lastQuote.process||0,2),round(lastQuote.setup,2),lastQuote.detail||'',lastQuote.turn||'',now.toISOString().slice(0,10)].join('|');
+ try{
+  const digest=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(canonical));
+  const hex=[...new Uint8Array(digest)].map(b=>b.toString(16).padStart(2,'0')).join('');
+  return (hex.slice(0,4)+'-'+hex.slice(4,8)+'-'+hex.slice(8,12)).toUpperCase();
+ }catch(e){ return null; } // SubtleCrypto unavailable (e.g. non-HTTPS) — don't block printing over it
+}
+async function printQuote(){
+ // Gated on designConfirmed + lastQuote together: with the price now hidden until real
+ // engagement, this also fixes the receipt printing with untouched defaults when no file
+ // or edit has happened yet — there's simply nothing to print until there's a real quote.
+ if(!designConfirmed||!lastQuote)return;
+ const old=document.title;document.title=`FabQuote Lagos — ${NGN(lastQuote.total)}`;
+ const ref='FQP-'+Date.now().toString(36).toUpperCase(), now=new Date();
+ const code=await buildVerificationCode(ref,now);
+ setDisplay('pv_ref',ref);setDisplay('pv_date',now.toLocaleString('en-NG'));setDisplay('pv_code',code||'unavailable on this device');
+ $('printVerifyBlock').classList.remove('hidden');
+ try{
+  const qty=service==='laser'?num('l_qty',1):num('p_qty',1);
+  const record={ref,code,date:now.toISOString(),service,qty,total:lastQuote.total,detail:lastQuote.detail||''};
+  const key='fabquote.printedQuotes';const arr=JSON.parse(localStorage.getItem(key)||'[]');arr.unshift(record);localStorage.setItem(key,JSON.stringify(arr.slice(0,100)));
+  // Best-effort: log the printed reference + code to Supabase so an operator can look a
+  // customer's printout up and confirm it matches, instead of only trusting the paper.
+  // Requires a `fabquote_printed_quotes` table — see note to the customer alongside this change.
+  if(SUPABASE)SUPABASE.from('fabquote_printed_quotes').insert([record]).then(({error})=>{if(error)console.warn('Printed-quote audit log unavailable:',error)}).catch(()=>{});
+ }catch(e){}
+ window.print();
+ setTimeout(()=>{document.title=old;$('printVerifyBlock').classList.add('hidden')},500);
+}
 function preflightComplete(){return ['pf_manifold','pf_units','pf_vectors'].every(id=>$(id)&&$(id).checked)}
 function syncPreflightGate(){
  const btn=$('requestBtn'); if(!btn)return;
  if(lastQuote && preflightComplete()) btn.removeAttribute('disabled'); else btn.setAttribute('disabled','disabled');
 }
-function updateCTA(){$('requestBtn').onclick=submitFormalQuote;$('whatsappDirectBtn').onclick=sendEstimate;$('printBtn').onclick=printQuote;syncPreflightGate()}
+function updateCTA(){
+ $('requestBtn').onclick=submitFormalQuote;$('whatsappDirectBtn').onclick=sendEstimate;$('printBtn').onclick=printQuote;
+ const ready=!!(designConfirmed&&lastQuote);
+ [$('whatsappDirectBtn'),$('printBtn')].forEach(b=>{ if(!b)return; b.classList.toggle('disabled',!ready); b.toggleAttribute('disabled',!ready); });
+ syncPreflightGate();
+}
 ['pf_manifold','pf_units','pf_vectors'].forEach(id=>{const el=$(id); if(el)el.addEventListener('change',syncPreflightGate)});
-document.querySelectorAll('input,select,textarea').forEach(el=>el.addEventListener('input',()=>{recalc();saveDraft()}));
+document.querySelectorAll('input,select,textarea').forEach(el=>el.addEventListener('input',()=>{
+ if(fileEngaged&&(el.closest('#laserFields')||el.closest('#printFields')))confirmDesign();
+ recalc();saveDraft();
+}));
 $('contact').addEventListener('input',updateCTA);
-document.querySelectorAll('.stepper button').forEach(b=>b.addEventListener('click',()=>{const i=$(b.dataset.target);i.value=Math.max(1,Math.floor(num(b.dataset.target,1))+parseInt(b.dataset.step,10));recalc()}));
-$('l_material_mode').addEventListener('change',()=>{$('laserSheetInputs').classList.toggle('hidden',$('l_material_mode').value!=='sheet');$('laserAreaInputs').classList.toggle('hidden',$('l_material_mode').value!=='area');recalc()});
-$('l_material').addEventListener('change',()=>{syncLockedRates();resetLaserNesting();recalc();scheduleLaserNesting()});
-$('l_qty').addEventListener('input',()=>{resetLaserNesting();recalc();scheduleLaserNesting()});
-['l_sheet_w','l_sheet_h','l_sheet_margin','l_part_gap'].forEach(id=>$(id).addEventListener('input',()=>{resetLaserNesting();recalc();scheduleLaserNesting()}));
-$('p_material_fdm').addEventListener('change',()=>{syncLockedRates();recalc()});
-$('p_material_resin').addEventListener('change',()=>{syncLockedRates();recalc()});
-['p_vol','p_w','p_d','p_height'].forEach(id=>$(id).addEventListener('input',()=>{ $('p_vol').dataset.surface=''; recalc(); }));
+document.querySelectorAll('.stepper button').forEach(b=>b.addEventListener('click',()=>{const i=$(b.dataset.target);i.value=Math.max(1,Math.floor(num(b.dataset.target,1))+parseInt(b.dataset.step,10));if(fileEngaged)confirmDesign();recalc()}));
+$('l_material_mode').addEventListener('change',()=>{if(fileEngaged)confirmDesign();$('laserSheetInputs').classList.toggle('hidden',$('l_material_mode').value!=='sheet');$('laserAreaInputs').classList.toggle('hidden',$('l_material_mode').value!=='area');recalc()});
+$('l_material').addEventListener('change',()=>{if(fileEngaged)confirmDesign();syncLockedRates();resetLaserNesting();recalc();scheduleLaserNesting()});
+$('l_qty').addEventListener('input',()=>{if(fileEngaged)confirmDesign();resetLaserNesting();recalc();scheduleLaserNesting()});
+['l_sheet_w','l_sheet_h','l_sheet_margin','l_part_gap'].forEach(id=>$(id).addEventListener('input',()=>{if(fileEngaged)confirmDesign();resetLaserNesting();recalc();scheduleLaserNesting()}));
+$('p_material_fdm').addEventListener('change',()=>{if(fileEngaged)confirmDesign();syncLockedRates();recalc()});
+$('p_material_resin').addEventListener('change',()=>{if(fileEngaged)confirmDesign();syncLockedRates();recalc()});
+['p_vol','p_w','p_d','p_height'].forEach(id=>$(id).addEventListener('input',()=>{ if(fileEngaged)confirmDesign(); $('p_vol').dataset.surface=''; recalc(); }));
 syncLockedRates(); loadDraft(); renderHistory(); recalc(); scheduleLaserNesting();
 })();
 </script>
